@@ -18,70 +18,42 @@
   --amber-100:#FEF3C7;--red-100:#FEE2E2;--red-500:#EF4444;
   --shadow-sm:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 16px rgba(0,0,0,.10);
 }
+
+/* ── Base ── */
 body{
   font-family:'Inter',sans-serif;
   background:linear-gradient(135deg,#EFF6FF 0%,#E0E7FF 50%,#F0F9FF 100%);
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 16px;
+  min-height:100vh;
 }
 
-/* ── Phone shell ── */
-.phone{
-  width:375px;height:780px;background:#1a1a2e;border-radius:44px;padding:10px;
-  box-shadow:0 30px 60px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.05);
-  position:relative;flex-shrink:0;
-}
-.phone::before{
-  content:'';position:absolute;top:10px;left:50%;transform:translateX(-50%);
-  width:100px;height:26px;background:#0d0d1a;border-radius:0 0 18px 18px;z-index:10;
-}
-.phone-screen{
-  width:100%;height:100%;border-radius:36px;overflow:hidden;
-  background:var(--gray-50);display:flex;flex-direction:column;position:relative;
-}
-
-/* ── Status bar ── */
-.status-bar{
-  background:white;display:flex;justify-content:space-between;align-items:center;
-  padding:36px 20px 8px;font-size:.62rem;font-weight:600;color:var(--gray-700);flex-shrink:0;
-}
-.time{font-weight:700;font-size:.72rem;}
-.status-icons{display:flex;gap:6px;align-items:center;font-size:.6rem;}
-
-/* ── Nav bar ── */
-.nav-bar{
-  background:white;display:flex;justify-content:space-around;
-  padding:10px 8px 14px;border-top:1px solid var(--gray-100);flex-shrink:0;
-}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.58rem;font-weight:500;color:var(--gray-400);cursor:pointer;}
-.nav-item.active{color:var(--blue-600);}
-.nav-icon{font-size:1.15rem;}
-
-/* ── Screens ── */
-.screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
-.screen.active{display:flex;}
-.scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;}
-.scroll::-webkit-scrollbar{display:none;}
-
-/* ── App header ── */
-.app-header{
-  background:white;padding:12px 20px 14px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--gray-100);flex-shrink:0;
-}
-.logo{font-size:1.25rem;font-weight:800;background:linear-gradient(135deg,var(--blue-600),#6366F1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.back-btn{display:flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;color:var(--blue-600);cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;}
-.notif-dot{width:8px;height:8px;background:var(--red-500);border-radius:50%;position:relative;top:-2px;}
-.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#6366F1);display:flex;align-items:center;justify-content:center;color:white;font-size:.6rem;font-weight:800;cursor:pointer;}
+/* ── App root container ── */
+#app{min-height:100vh;display:flex;flex-direction:column;}
 
 /* ════════ AUTH SCREENS ════════ */
 .auth-screen{
-  display:none;flex-direction:column;flex:1;overflow:hidden;background:white;
+  display:none;flex-direction:column;background:white;
+  min-height:100vh;width:100%;
 }
 .auth-screen.active{display:flex;}
+
+/* Desktop: auth as a centered card */
+@media(min-width:768px){
+  #app:has(.auth-screen.active){
+    align-items:center;justify-content:center;padding:40px 16px;
+  }
+  .auth-screen.active{
+    min-height:unset;
+    width:480px;max-width:100%;
+    border-radius:24px;overflow:hidden;
+    box-shadow:0 25px 60px rgba(0,0,0,.18);
+    max-height:92vh;
+  }
+}
 
 .auth-hero{
   background:linear-gradient(160deg,var(--blue-600) 0%,#6366F1 100%);
   padding:48px 24px 36px;text-align:center;color:white;position:relative;overflow:hidden;
+  flex-shrink:0;
 }
 .auth-hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:150px;height:150px;background:rgba(255,255,255,.08);border-radius:50%;}
 .auth-hero::before{content:'';position:absolute;top:-20px;left:-20px;width:100px;height:100px;background:rgba(255,255,255,.06);border-radius:50%;}
@@ -125,6 +97,113 @@ body{
   display:none;
 }
 .error-box.show{display:block;}
+
+/* ════════ MAIN APP LAYOUT ════════ */
+#main-app{
+  flex:1;display:flex;flex-direction:column;
+  background:var(--gray-50);
+}
+
+/* Content area (wraps all screens) */
+.content-area{
+  flex:1;display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* ── NAV BAR — bottom tabs on mobile, sidebar on desktop ── */
+.nav-bar{
+  background:white;
+  display:flex;flex-direction:row;justify-content:space-around;
+  padding:8px 8px calc(10px + env(safe-area-inset-bottom, 0px));
+  border-top:1px solid var(--gray-100);flex-shrink:0;
+  z-index:100;
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;
+  gap:3px;font-size:.58rem;font-weight:500;color:var(--gray-400);
+  cursor:pointer;padding:4px 8px;border-radius:10px;
+  transition:color .15s,background .15s;
+}
+.nav-item.active{color:var(--blue-600);}
+.nav-icon{font-size:1.15rem;}
+
+/* Sidebar-only elements: hidden on mobile */
+.sidebar-brand,.sidebar-footer{display:none;}
+
+/* ── Desktop sidebar ── */
+@media(min-width:768px){
+  #main-app{
+    flex-direction:row !important;
+    height:100vh;
+    overflow:hidden !important;
+  }
+
+  /* Sidebar */
+  .nav-bar{
+    flex-direction:column;justify-content:flex-start;align-items:stretch;
+    width:220px;flex-shrink:0;
+    border-top:none;border-right:1px solid var(--gray-100);
+    padding:0 12px 16px;gap:2px;
+    height:100vh;overflow-y:auto;
+    /* sidebar comes first (left) */
+    order:0;
+  }
+  .sidebar-brand{
+    display:flex;flex-direction:column;
+    padding:22px 10px 18px;flex-shrink:0;
+  }
+  .sidebar-logo{
+    font-size:1.4rem;font-weight:800;
+    background:linear-gradient(135deg,var(--blue-600),#6366F1);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    display:flex;align-items:center;gap:6px;
+  }
+  .sidebar-tagline{font-size:.58rem;color:var(--gray-400);margin-top:3px;padding-left:2px;}
+  .sidebar-footer{
+    display:flex;align-items:center;gap:10px;
+    margin-top:auto;padding:14px 10px 8px;
+    border-top:1px solid var(--gray-100);cursor:pointer;flex-shrink:0;
+  }
+  .sidebar-av{
+    width:34px;height:34px;border-radius:50%;
+    background:linear-gradient(135deg,var(--blue-500),#6366F1);
+    color:white;display:flex;align-items:center;justify-content:center;
+    font-size:.68rem;font-weight:800;flex-shrink:0;overflow:hidden;
+  }
+  .sidebar-av img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+  .sidebar-user-name{font-size:.75rem;font-weight:700;color:var(--gray-900);line-height:1.3;}
+  .sidebar-sign-out{font-size:.6rem;color:var(--gray-400);cursor:pointer;margin-top:1px;}
+  .sidebar-sign-out:hover{color:var(--red-500);}
+
+  .nav-item{
+    flex-direction:row;justify-content:flex-start;font-size:.8rem;
+    gap:10px;padding:10px 14px;border-radius:10px;width:100%;
+  }
+  .nav-item.active{background:var(--blue-50);color:var(--blue-600);}
+  .nav-item:hover:not(.active){background:var(--gray-50);}
+  .nav-icon{font-size:1.05rem;}
+
+  /* Content area */
+  .content-area{
+    flex:1;height:100vh;overflow:hidden;order:1;
+  }
+}
+
+/* ════════ SCREENS ════════ */
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;}
+.screen.active{display:flex;}
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;}
+.scroll::-webkit-scrollbar{display:none;}
+
+/* ── App header (inside each screen) ── */
+.app-header{
+  background:white;padding:12px 20px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--gray-100);flex-shrink:0;
+}
+.logo{font-size:1.25rem;font-weight:800;background:linear-gradient(135deg,var(--blue-600),#6366F1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.back-btn{display:flex;align-items:center;gap:4px;font-size:.72rem;font-weight:600;color:var(--blue-600);cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;}
+.notif-dot{width:8px;height:8px;background:var(--red-500);border-radius:50%;position:relative;top:-2px;}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#3B82F6,#6366F1);display:flex;align-items:center;justify-content:center;color:white;font-size:.6rem;font-weight:800;cursor:pointer;overflow:hidden;}
 
 /* ════════ HOME ════════ */
 .home-hero{
@@ -301,17 +380,29 @@ body{
 .notif-time{font-size:.6rem;color:var(--gray-400);margin-top:2px;}
 
 /* ── Toast ── */
-.toast{position:absolute;bottom:82px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray-900);color:white;font-size:.72rem;font-weight:600;padding:10px 20px;border-radius:12px;white-space:nowrap;opacity:0;transition:all .3s;pointer-events:none;z-index:200;}
+.toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--gray-900);color:white;font-size:.75rem;font-weight:600;
+  padding:10px 20px;border-radius:12px;white-space:nowrap;
+  opacity:0;transition:all .3s;pointer-events:none;z-index:9999;
+}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(min-width:768px){.toast{bottom:24px;}}
 
 /* ── Spinner overlay ── */
-.spinner-overlay{position:absolute;inset:0;background:rgba(255,255,255,.7);display:none;align-items:center;justify-content:center;z-index:300;border-radius:36px;}
+.spinner-overlay{
+  position:fixed;inset:0;background:rgba(255,255,255,.7);
+  display:none;align-items:center;justify-content:center;z-index:9998;
+}
 .spinner-overlay.show{display:flex;}
 .spinner{width:36px;height:36px;border:3px solid var(--blue-100);border-top-color:var(--blue-600);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* ── Modal ── */
-.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;z-index:200;border-radius:36px;}
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);
+  display:none;align-items:flex-end;z-index:9997;
+}
 .modal-overlay.show{display:flex;}
 .modal-box{background:white;border-radius:24px 24px 0 0;padding:20px 20px 24px;width:100%;animation:slideUp .3s ease;}
 @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
@@ -320,17 +411,18 @@ body{
 .modal-btn{width:100%;border:none;border-radius:12px;padding:13px;font-size:.78rem;font-weight:700;cursor:pointer;margin-bottom:8px;font-family:'Inter',sans-serif;}
 .modal-btn-primary{background:linear-gradient(135deg,var(--blue-600),#6366F1);color:white;}
 .modal-btn-cancel{background:var(--gray-100);color:var(--gray-600);}
+
+/* ── Desktop content width cap (optional nicety) ── */
+@media(min-width:1200px){
+  .home-section,.report-body,.detail-body,.match-body,.profile-body,.results-list{max-width:780px;}
+}
 </style>
 </head>
 <body>
-<div class="phone">
-<div class="phone-screen" id="app">
+<div id="app">
 
-  <!-- STATUS BAR -->
-  <div class="status-bar">
-    <span class="time" id="clock">9:41</span>
-    <div class="status-icons"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
-  </div>
+  <!-- Hidden clock (keeps JS working) -->
+  <span id="clock" style="position:absolute;left:-9999px;" aria-hidden="true"></span>
 
   <!-- ══════ AUTH: LOGIN ══════ -->
   <div class="auth-screen active" id="screen-login">
@@ -399,395 +491,372 @@ body{
   </div>
 
   <!-- ══════ MAIN APP (hidden until logged in) ══════ -->
-  <div id="main-app" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+  <div id="main-app" style="display:none;">
 
-    <!-- HOME -->
-    <div class="screen active" id="screen-home">
-      <div class="app-header">
-        <span class="logo">FindIt</span>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-size:1.1rem;cursor:pointer;" onclick="navigate('notifications')">🔔</span>
-          <div class="notif-dot" id="notif-dot" style="display:none;"></div>
-          <div class="avatar" id="user-avatar" onclick="navigate('profile')">TP</div>
-        </div>
-      </div>
-      <div class="scroll">
-        <div class="home-hero">
-          <div class="hero-greeting" id="hero-greeting">Good morning 👋</div>
-          <h2 class="hero-title">Find what you lost,<br/>or return what you found.</h2>
-          <div class="hero-stats">
-            <div class="hero-stat"><div class="val" id="stat-active">–</div><div class="lbl">Active Listings</div></div>
-            <div class="hero-stat"><div class="val">58</div><div class="lbl">Reunited Today</div></div>
-            <div class="hero-stat"><div class="val">92%</div><div class="lbl">Match Rate</div></div>
-          </div>
-        </div>
-        <div class="home-section">
-          <div class="section-label">Quick Actions</div>
-          <button class="action-btn btn-lost" onclick="openReport('lost')">
-            <div class="btn-icon icon-lost">🔍</div>
-            <div><div class="btn-title">Report Lost Item</div><div class="btn-sub">Something missing? Post it here</div></div>
-            <span class="chevron">›</span>
-          </button>
-          <button class="action-btn btn-found" onclick="openReport('found')">
-            <div class="btn-icon icon-found">📦</div>
-            <div><div class="btn-title">Report Found Item</div><div class="btn-sub">Found something? Help it go home</div></div>
-            <span class="chevron">›</span>
-          </button>
-          <button class="action-btn btn-search" onclick="navigate('search')">
-            <div class="btn-icon icon-search">🗂️</div>
-            <div><div class="btn-title">Search Items</div><div class="btn-sub">Browse all lost &amp; found listings</div></div>
-            <span class="chevron">›</span>
-          </button>
-        </div>
-        <div class="home-section" style="padding-top:14px;">
-          <div class="section-label">Recent Activity</div>
-          <div id="recent-list"><div class="empty-state"><div class="es-icon">⏳</div><div class="es-title">Loading…</div></div></div>
-        </div>
-        <div style="height:16px;"></div>
-      </div>
-    </div>
-
-    <!-- REPORT -->
-    <div class="screen" id="screen-report">
-      <div class="app-header">
-        <button class="back-btn" onclick="navigate('home')">← Back</button>
-        <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Report Item</span>
-        <span style="font-size:.7rem;color:var(--blue-600);font-weight:600;">Step 1/1</span>
-      </div>
-      <div class="scroll">
-        <div class="report-body">
-          <div class="tab-switcher">
-            <button class="tab active-lost" id="tab-lost" onclick="setReportType('lost')">🔍 Lost Item</button>
-            <button class="tab" id="tab-found" onclick="setReportType('found')">📦 Found Item</button>
-          </div>
-          <!-- Photo upload (optional) -->
-          <div class="upload-area" id="upload-area" onclick="triggerUpload()">
-            <div class="up-icon">📷</div>
-            <div class="up-title">Add a Photo <span style="font-weight:400;color:var(--gray-400);">(optional)</span></div>
-            <div class="up-sub">Helps others identify it faster</div>
-            <button class="up-btn" onclick="event.stopPropagation();triggerUpload()">Choose Photo</button>
-          </div>
-          <input type="file" id="file-input" accept="image/*" style="display:none;" onchange="handleUpload(event)"/>
-
-          <div class="form-group">
-            <label class="form-label">Item Name *</label>
-            <input class="form-input" id="r-name" type="text" placeholder="e.g. Blue Jansport Backpack"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Description *</label>
-            <textarea class="form-input textarea" id="r-desc" placeholder="Colour, size, brand, any unique marks…"></textarea>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Location *</label>
-            <div class="input-wrap">
-              <span class="input-icon">📍</span>
-              <input class="form-input" id="r-location" type="text" placeholder="e.g. Library 2nd Floor"/>
-            </div>
-          </div>
-          <button class="map-toggle-btn" id="map-toggle-btn" onclick="toggleMap()">🗺️ Pick on Map (optional)</button>
-          <div id="map-container"></div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Date *</label>
-              <div class="input-wrap">
-                <span class="input-icon">📅</span>
-                <input class="form-input" id="r-date" type="date"/>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Category</label>
-              <input class="form-input" id="r-category" type="text" placeholder="e.g. Bag"/>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Contact Details *</label>
-            <div class="input-wrap">
-              <span class="input-icon">✉️</span>
-              <input class="form-input" id="r-contact" type="text" placeholder="Email or phone number"/>
-            </div>
-          </div>
-          <button class="primary-btn" id="submit-btn" onclick="submitReport()">Submit Report →</button>
-          <div style="height:16px;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SEARCH -->
-    <div class="screen" id="screen-search">
-      <div class="app-header">
-        <button class="back-btn" onclick="navigate('home')">← Back</button>
-        <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Browse Items</span>
-        <span style="font-size:.9rem;">⚙️</span>
-      </div>
-      <div class="search-bar-wrap">
-        <div class="search-input-wrap">
-          <span class="s-icon">🔍</span>
-          <input id="search-input" placeholder='Search "backpack", "keys", "wallet"…' oninput="filterItems()"/>
-        </div>
-      </div>
-      <div class="filter-bar">
-        <button class="filter-chip active" onclick="setFilter('all',this)">All Items</button>
-        <button class="filter-chip" onclick="setFilter('lost',this)">Lost Only</button>
-        <button class="filter-chip" onclick="setFilter('found',this)">Found Only</button>
-        <button class="filter-chip" onclick="setFilter('Library',this)">📍 Library</button>
-        <button class="filter-chip" onclick="setFilter('Cafeteria',this)">☕ Cafeteria</button>
-        <button class="filter-chip" onclick="setFilter('Room',this)">🏛️ Classrooms</button>
-      </div>
-      <div class="results-header">
-        <span class="results-count" id="results-count">0 items</span>
-        <button class="sort-btn" onclick="toggleSort()">Sort: Recent ↓</button>
-      </div>
-      <div class="scroll"><div class="results-list" id="results-list"></div></div>
-    </div>
-
-    <!-- ITEM DETAIL -->
-    <div class="screen" id="screen-detail">
-      <div class="app-header">
-        <button class="back-btn" onclick="navigate('search')">← Back</button>
-        <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Item Details</span>
-        <span style="font-size:.9rem;cursor:pointer;" onclick="showShareModal()">↗️</span>
-      </div>
-      <div class="scroll">
-        <div id="detail-hero"></div>
-        <div id="detail-body"></div>
-      </div>
-    </div>
-
-    <!-- MATCH -->
-    <div class="screen" id="screen-match">
-      <div class="app-header">
-        <button class="back-btn" onclick="navigate('search')">← Back</button>
-        <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Match Alert</span>
-        <span>✨</span>
-      </div>
-      <div class="scroll">
-        <div class="match-hero">
-          <div class="match-circle">🎯</div>
-          <h2>Possible Match Found!</h2>
-          <p>We found an item that closely matches<br/>your report. Review it now.</p>
-          <div class="match-scores">
-            <div class="match-score-pill"><div class="ms-val" id="match-pct-display">–</div><div class="ms-lbl">Match Score</div></div>
-            <div class="match-score-pill"><div class="ms-val" id="match-attr">–</div><div class="ms-lbl">Attributes</div></div>
-          </div>
-        </div>
-        <div class="match-body">
-          <div class="notif-banner">
-            <span class="nb-icon">⚡</span>
-            <div class="nb-text"><strong>Act quickly!</strong> Items are typically claimed within 24 hours of a match.</div>
-          </div>
-          <div class="compare-card">
-            <div class="mc-label">Item Comparison</div>
-            <div class="compare-items">
-              <div class="compare-item"><div class="ci-img" id="m-icon-a">📦</div><div class="ci-name" id="m-name-a">Your Item</div><div class="ci-loc" id="m-loc-a">📍 –</div></div>
-              <div class="compare-arrow">⇌</div>
-              <div class="compare-item"><div class="ci-img" id="m-icon-b">📦</div><div class="ci-name" id="m-name-b">Match</div><div class="ci-loc" id="m-loc-b">📍 –</div></div>
-            </div>
-          </div>
-          <div class="detail-card" id="match-detail-table"></div>
-          <button class="view-btn" onclick="viewMatchDetail()">View Full Details →</button>
-          <button class="dismiss-btn" onclick="navigate('search')">Not My Item</button>
-          <div style="height:12px;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NOTIFICATIONS -->
-    <div class="screen" id="screen-notifications">
-      <div class="app-header">
-        <button class="back-btn" onclick="navigate('home')">← Back</button>
-        <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Notifications</span>
-        <span style="font-size:.7rem;color:var(--blue-600);font-weight:600;cursor:pointer;" onclick="clearNotifs()">Clear all</span>
-      </div>
-      <div class="scroll"><div style="padding:16px 20px;" id="notif-list"></div></div>
-    </div>
-
-    <!-- PROFILE -->
-    <div class="screen" id="screen-profile">
-      <div class="scroll">
-        <div class="profile-hero">
-          <div class="profile-avatar-big" id="profile-avatar-big" onclick="triggerProfilePhoto()">TP<span class="profile-avatar-edit">📷</span></div>
-          <input type="file" id="profile-photo-input" accept="image/*" style="display:none;" onchange="handleProfilePhoto(event)"/>
-          <div class="profile-name" id="profile-name">–</div>
-          <div class="profile-email" id="profile-email">–</div>
-          <div class="profile-stats">
-            <div class="profile-stat"><div class="ps-val" id="p-reported">–</div><div class="ps-lbl">Reported</div></div>
-            <div class="profile-stat"><div class="ps-val">3</div><div class="ps-lbl">Reunited</div></div>
-            <div class="profile-stat"><div class="ps-val" id="p-matches">–</div><div class="ps-lbl">Matches</div></div>
-          </div>
-        </div>
-        <div class="profile-body">
-          <div class="profile-menu-item" onclick="navigate('myitems')">
-            <div class="pmi-icon" style="background:var(--blue-100);">📋</div>
-            <div><div class="pmi-title">My Reports</div><div class="pmi-sub">View your active listings</div></div>
-            <span class="pmi-arrow">›</span>
-          </div>
-          <div class="profile-menu-item" onclick="navigate('notifications')">
-            <div class="pmi-icon" style="background:var(--amber-100);">🔔</div>
-            <div><div class="pmi-title">Notifications</div><div class="pmi-sub">Match alerts &amp; updates</div></div>
-            <span class="pmi-arrow">›</span>
-          </div>
-          <div class="profile-menu-item" onclick="navigate('privacy')">
-            <div class="pmi-icon" style="background:var(--green-100);">🔒</div>
-            <div><div class="pmi-title">Privacy Settings</div><div class="pmi-sub">Manage your data</div></div>
-            <span class="pmi-arrow">›</span>
-          </div>
-          <div class="profile-menu-item" id="admin-menu-item" style="display:none;" onclick="navigate('admin')">
-            <div class="pmi-icon" style="background:#EDE9FE;">🛡️</div>
-            <div><div class="pmi-title">Admin Dashboard</div><div class="pmi-sub">Manage all users & items</div></div>
-            <span class="pmi-arrow">›</span>
-          </div>
-          <div class="profile-menu-item" onclick="doLogout()">
-            <div class="pmi-icon" style="background:var(--red-100);">🚪</div>
-            <div><div class="pmi-title">Log Out</div><div class="pmi-sub">Sign out of FindIt</div></div>
-            <span class="pmi-arrow">›</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- MY ITEMS -->
-    <div class="screen" id="screen-myitems">
-      <div class="app-header">
-        <button class="back-btn" onclick="navigate('profile')">← Back</button>
-        <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">My Reports</span>
-        <span style="font-size:.9rem;cursor:pointer;" onclick="openReport('lost')">➕</span>
-      </div>
-      <div class="scroll"><div class="results-list" id="my-items-list" style="padding:12px 20px;"></div></div>
-    </div>
-
-    <!-- PRIVACY SETTINGS -->
-    <div class="screen" id="screen-privacy">
-      <div class="app-header">
-        <button class="back-btn" onclick="navigate('profile')">← Back</button>
-        <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Privacy Settings</span>
-        <span>🔒</span>
-      </div>
-      <div class="scroll">
-        <div style="padding:16px 20px;">
-
-          <!-- Account -->
-          <div class="section-label" style="margin-bottom:10px;">Account</div>
-          <div class="info-card" style="margin-bottom:14px;">
-            <div class="info-row">
-              <span class="info-icon">👤</span>
-              <div style="flex:1;">
-                <div class="info-key">Full Name</div>
-                <div class="info-val" id="priv-name">–</div>
-              </div>
-            </div>
-            <div class="info-row">
-              <span class="info-icon">✉️</span>
-              <div style="flex:1;">
-                <div class="info-key">Email Address</div>
-                <div class="info-val" id="priv-email">–</div>
-              </div>
-            </div>
-            <div class="info-row" style="border-bottom:none;">
-              <span class="info-icon">🔑</span>
-              <div style="flex:1;">
-                <div class="info-key">Password</div>
-                <div class="info-val">••••••••</div>
-              </div>
-              <span style="font-size:.68rem;font-weight:700;color:var(--blue-600);cursor:pointer;" onclick="showToast('Password change coming soon!')">Change</span>
-            </div>
-          </div>
-
-          <!-- Visibility toggles -->
-          <div class="section-label" style="margin-bottom:10px;">Visibility</div>
-          <div class="info-card" style="margin-bottom:14px;">
-            <div class="info-row" style="align-items:center;">
-              <span class="info-icon">📞</span>
-              <div style="flex:1;">
-                <div class="info-key">Show Contact Info</div>
-                <div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Let others see your contact on item cards</div>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-contact" checked onchange="savePrivacy()"/>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="info-row" style="align-items:center;">
-              <span class="info-icon">🔍</span>
-              <div style="flex:1;">
-                <div class="info-key">Show My Listings Publicly</div>
-                <div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Anyone can see your reported items</div>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-public" checked onchange="savePrivacy()"/>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="info-row" style="align-items:center;border-bottom:none;">
-              <span class="info-icon">📧</span>
-              <div style="flex:1;">
-                <div class="info-key">Email Notifications</div>
-                <div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Receive match alerts via email</div>
-              </div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="toggle-email" checked onchange="savePrivacy()"/>
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Data -->
-          <div class="section-label" style="margin-bottom:10px;">Your Data</div>
-          <div class="info-card" style="margin-bottom:14px;">
-            <div class="info-row" style="border-bottom:none;cursor:pointer;" onclick="exportData()">
-              <span class="info-icon">⬇️</span>
-              <div style="flex:1;">
-                <div class="info-key">Export My Data</div>
-                <div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Download all your reports as JSON</div>
-              </div>
-              <span style="color:var(--gray-300);">›</span>
-            </div>
-          </div>
-
-          <!-- Danger zone -->
-          <div class="section-label" style="margin-bottom:10px;color:var(--red-500);">Danger Zone</div>
-          <div class="info-card" style="margin-bottom:14px;border:1.5px solid var(--red-100);">
-            <div class="info-row" style="cursor:pointer;border-bottom:none;" onclick="confirmDeleteAccount()">
-              <span class="info-icon">🗑️</span>
-              <div style="flex:1;">
-                <div class="info-key" style="color:var(--red-500);">Delete Account</div>
-                <div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Permanently delete your account & all data</div>
-              </div>
-              <span style="color:var(--red-500);">›</span>
-            </div>
-          </div>
-
-          <div style="height:16px;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ADMIN DASHBOARD -->
-    <div class="screen" id="screen-admin">
-      <div class="app-header">
-        <button class="back-btn" onclick="navigate('profile')">← Back</button>
-        <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Admin Dashboard</span>
-        <span>🛡️</span>
-      </div>
-      <div class="scroll">
-        <div style="padding:16px 20px;">
-          <div class="admin-stat-grid" id="admin-stats"></div>
-          <div class="section-label" style="margin-bottom:10px;">All Items</div>
-          <div id="admin-items-list"></div>
-          <div class="section-label" style="margin-bottom:10px;margin-top:8px;">Registered Users</div>
-          <div id="admin-users-list"></div>
-          <div style="height:16px;"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NAV BAR -->
+    <!-- NAV (sidebar on desktop · bottom tabs on mobile) -->
     <div class="nav-bar">
+      <!-- Desktop only: brand -->
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">🔍 FindIt</div>
+        <div class="sidebar-tagline">Campus Lost &amp; Found</div>
+      </div>
+
       <div class="nav-item active" id="nav-home" onclick="navigate('home')"><span class="nav-icon">🏠</span>Home</div>
       <div class="nav-item" id="nav-search" onclick="navigate('search')"><span class="nav-icon">🔍</span>Search</div>
       <div class="nav-item" id="nav-report" onclick="openReport('lost')"><span class="nav-icon">➕</span>Report</div>
       <div class="nav-item" id="nav-notifications" onclick="navigate('notifications')"><span class="nav-icon">🔔</span>Alerts</div>
       <div class="nav-item" id="nav-profile" onclick="navigate('profile')"><span class="nav-icon">👤</span>Profile</div>
-    </div>
+
+      <!-- Desktop only: user footer -->
+      <div class="sidebar-footer" id="sidebar-footer">
+        <div class="sidebar-av" id="sidebar-av">?</div>
+        <div style="flex:1;min-width:0;">
+          <div class="sidebar-user-name" id="sidebar-name">–</div>
+          <div class="sidebar-sign-out" onclick="doLogout()">Sign out</div>
+        </div>
+      </div>
+    </div><!-- /nav-bar -->
+
+    <!-- CONTENT AREA (all screens live here) -->
+    <div class="content-area">
+
+      <!-- HOME -->
+      <div class="screen active" id="screen-home">
+        <div class="app-header">
+          <span class="logo">FindIt</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:1.1rem;cursor:pointer;" onclick="navigate('notifications')">🔔</span>
+            <div class="notif-dot" id="notif-dot" style="display:none;"></div>
+            <div class="avatar" id="user-avatar" onclick="navigate('profile')">TP</div>
+          </div>
+        </div>
+        <div class="scroll">
+          <div class="home-hero">
+            <div class="hero-greeting" id="hero-greeting">Good morning 👋</div>
+            <h2 class="hero-title">Find what you lost,<br/>or return what you found.</h2>
+            <div class="hero-stats">
+              <div class="hero-stat"><div class="val" id="stat-active">–</div><div class="lbl">Active Listings</div></div>
+              <div class="hero-stat"><div class="val">58</div><div class="lbl">Reunited Today</div></div>
+              <div class="hero-stat"><div class="val">92%</div><div class="lbl">Match Rate</div></div>
+            </div>
+          </div>
+          <div class="home-section">
+            <div class="section-label">Quick Actions</div>
+            <button class="action-btn btn-lost" onclick="openReport('lost')">
+              <div class="btn-icon icon-lost">🔍</div>
+              <div><div class="btn-title">Report Lost Item</div><div class="btn-sub">Something missing? Post it here</div></div>
+              <span class="chevron">›</span>
+            </button>
+            <button class="action-btn btn-found" onclick="openReport('found')">
+              <div class="btn-icon icon-found">📦</div>
+              <div><div class="btn-title">Report Found Item</div><div class="btn-sub">Found something? Help it go home</div></div>
+              <span class="chevron">›</span>
+            </button>
+            <button class="action-btn btn-search" onclick="navigate('search')">
+              <div class="btn-icon icon-search">🗂️</div>
+              <div><div class="btn-title">Search Items</div><div class="btn-sub">Browse all lost &amp; found listings</div></div>
+              <span class="chevron">›</span>
+            </button>
+          </div>
+          <div class="home-section" style="padding-top:14px;">
+            <div class="section-label">Recent Activity</div>
+            <div id="recent-list"><div class="empty-state"><div class="es-icon">⏳</div><div class="es-title">Loading…</div></div></div>
+          </div>
+          <div style="height:16px;"></div>
+        </div>
+      </div>
+
+      <!-- REPORT -->
+      <div class="screen" id="screen-report">
+        <div class="app-header">
+          <button class="back-btn" onclick="navigate('home')">← Back</button>
+          <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Report Item</span>
+          <span style="font-size:.7rem;color:var(--blue-600);font-weight:600;">Step 1/1</span>
+        </div>
+        <div class="scroll">
+          <div class="report-body">
+            <div class="tab-switcher">
+              <button class="tab active-lost" id="tab-lost" onclick="setReportType('lost')">🔍 Lost Item</button>
+              <button class="tab" id="tab-found" onclick="setReportType('found')">📦 Found Item</button>
+            </div>
+            <div class="upload-area" id="upload-area" onclick="triggerUpload()">
+              <div class="up-icon">📷</div>
+              <div class="up-title">Add a Photo <span style="font-weight:400;color:var(--gray-400);">(optional)</span></div>
+              <div class="up-sub">Helps others identify it faster</div>
+              <button class="up-btn" onclick="event.stopPropagation();triggerUpload()">Choose Photo</button>
+            </div>
+            <input type="file" id="file-input" accept="image/*" style="display:none;" onchange="handleUpload(event)"/>
+            <div class="form-group">
+              <label class="form-label">Item Name *</label>
+              <input class="form-input" id="r-name" type="text" placeholder="e.g. Blue Jansport Backpack"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description *</label>
+              <textarea class="form-input textarea" id="r-desc" placeholder="Colour, size, brand, any unique marks…"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Location *</label>
+              <div class="input-wrap">
+                <span class="input-icon">📍</span>
+                <input class="form-input" id="r-location" type="text" placeholder="e.g. Library 2nd Floor"/>
+              </div>
+            </div>
+            <button class="map-toggle-btn" id="map-toggle-btn" onclick="toggleMap()">🗺️ Pick on Map (optional)</button>
+            <div id="map-container"></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Date *</label>
+                <div class="input-wrap">
+                  <span class="input-icon">📅</span>
+                  <input class="form-input" id="r-date" type="date"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <input class="form-input" id="r-category" type="text" placeholder="e.g. Bag"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Details *</label>
+              <div class="input-wrap">
+                <span class="input-icon">✉️</span>
+                <input class="form-input" id="r-contact" type="text" placeholder="Email or phone number"/>
+              </div>
+            </div>
+            <button class="primary-btn" id="submit-btn" onclick="submitReport()">Submit Report →</button>
+            <div style="height:16px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEARCH -->
+      <div class="screen" id="screen-search">
+        <div class="app-header">
+          <button class="back-btn" onclick="navigate('home')">← Back</button>
+          <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Browse Items</span>
+          <span style="font-size:.9rem;">⚙️</span>
+        </div>
+        <div class="search-bar-wrap">
+          <div class="search-input-wrap">
+            <span class="s-icon">🔍</span>
+            <input id="search-input" placeholder='Search "backpack", "keys", "wallet"…' oninput="filterItems()"/>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-chip active" onclick="setFilter('all',this)">All Items</button>
+          <button class="filter-chip" onclick="setFilter('lost',this)">Lost Only</button>
+          <button class="filter-chip" onclick="setFilter('found',this)">Found Only</button>
+          <button class="filter-chip" onclick="setFilter('Library',this)">📍 Library</button>
+          <button class="filter-chip" onclick="setFilter('Cafeteria',this)">☕ Cafeteria</button>
+          <button class="filter-chip" onclick="setFilter('Room',this)">🏛️ Classrooms</button>
+        </div>
+        <div class="results-header">
+          <span class="results-count" id="results-count">0 items</span>
+          <button class="sort-btn" onclick="toggleSort()">Sort: Recent ↓</button>
+        </div>
+        <div class="scroll"><div class="results-list" id="results-list"></div></div>
+      </div>
+
+      <!-- ITEM DETAIL -->
+      <div class="screen" id="screen-detail">
+        <div class="app-header">
+          <button class="back-btn" onclick="navigate('search')">← Back</button>
+          <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Item Details</span>
+          <span style="font-size:.9rem;cursor:pointer;" onclick="showShareModal()">↗️</span>
+        </div>
+        <div class="scroll">
+          <div id="detail-hero"></div>
+          <div id="detail-body"></div>
+        </div>
+      </div>
+
+      <!-- MATCH -->
+      <div class="screen" id="screen-match">
+        <div class="app-header">
+          <button class="back-btn" onclick="navigate('search')">← Back</button>
+          <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Match Alert</span>
+          <span>✨</span>
+        </div>
+        <div class="scroll">
+          <div class="match-hero">
+            <div class="match-circle">🎯</div>
+            <h2>Possible Match Found!</h2>
+            <p>We found an item that closely matches<br/>your report. Review it now.</p>
+            <div class="match-scores">
+              <div class="match-score-pill"><div class="ms-val" id="match-pct-display">–</div><div class="ms-lbl">Match Score</div></div>
+              <div class="match-score-pill"><div class="ms-val" id="match-attr">–</div><div class="ms-lbl">Attributes</div></div>
+            </div>
+          </div>
+          <div class="match-body">
+            <div class="notif-banner">
+              <span class="nb-icon">⚡</span>
+              <div class="nb-text"><strong>Act quickly!</strong> Items are typically claimed within 24 hours of a match.</div>
+            </div>
+            <div class="compare-card">
+              <div class="mc-label">Item Comparison</div>
+              <div class="compare-items">
+                <div class="compare-item"><div class="ci-img" id="m-icon-a">📦</div><div class="ci-name" id="m-name-a">Your Item</div><div class="ci-loc" id="m-loc-a">📍 –</div></div>
+                <div class="compare-arrow">⇌</div>
+                <div class="compare-item"><div class="ci-img" id="m-icon-b">📦</div><div class="ci-name" id="m-name-b">Match</div><div class="ci-loc" id="m-loc-b">📍 –</div></div>
+              </div>
+            </div>
+            <div class="detail-card" id="match-detail-table"></div>
+            <button class="view-btn" onclick="viewMatchDetail()">View Full Details →</button>
+            <button class="dismiss-btn" onclick="navigate('search')">Not My Item</button>
+            <div style="height:12px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="screen" id="screen-notifications">
+        <div class="app-header">
+          <button class="back-btn" onclick="navigate('home')">← Back</button>
+          <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Notifications</span>
+          <span style="font-size:.7rem;color:var(--blue-600);font-weight:600;cursor:pointer;" onclick="clearNotifs()">Clear all</span>
+        </div>
+        <div class="scroll"><div style="padding:16px 20px;" id="notif-list"></div></div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="screen" id="screen-profile">
+        <div class="scroll">
+          <div class="profile-hero">
+            <div class="profile-avatar-big" id="profile-avatar-big" onclick="triggerProfilePhoto()">TP<span class="profile-avatar-edit">📷</span></div>
+            <input type="file" id="profile-photo-input" accept="image/*" style="display:none;" onchange="handleProfilePhoto(event)"/>
+            <div class="profile-name" id="profile-name">–</div>
+            <div class="profile-email" id="profile-email">–</div>
+            <div class="profile-stats">
+              <div class="profile-stat"><div class="ps-val" id="p-reported">–</div><div class="ps-lbl">Reported</div></div>
+              <div class="profile-stat"><div class="ps-val">3</div><div class="ps-lbl">Reunited</div></div>
+              <div class="profile-stat"><div class="ps-val" id="p-matches">–</div><div class="ps-lbl">Matches</div></div>
+            </div>
+          </div>
+          <div class="profile-body">
+            <div class="profile-menu-item" onclick="navigate('myitems')">
+              <div class="pmi-icon" style="background:var(--blue-100);">📋</div>
+              <div><div class="pmi-title">My Reports</div><div class="pmi-sub">View your active listings</div></div>
+              <span class="pmi-arrow">›</span>
+            </div>
+            <div class="profile-menu-item" onclick="navigate('notifications')">
+              <div class="pmi-icon" style="background:var(--amber-100);">🔔</div>
+              <div><div class="pmi-title">Notifications</div><div class="pmi-sub">Match alerts &amp; updates</div></div>
+              <span class="pmi-arrow">›</span>
+            </div>
+            <div class="profile-menu-item" onclick="navigate('privacy')">
+              <div class="pmi-icon" style="background:var(--green-100);">🔒</div>
+              <div><div class="pmi-title">Privacy Settings</div><div class="pmi-sub">Manage your data</div></div>
+              <span class="pmi-arrow">›</span>
+            </div>
+            <div class="profile-menu-item" id="admin-menu-item" style="display:none;" onclick="navigate('admin')">
+              <div class="pmi-icon" style="background:#EDE9FE;">🛡️</div>
+              <div><div class="pmi-title">Admin Dashboard</div><div class="pmi-sub">Manage all users &amp; items</div></div>
+              <span class="pmi-arrow">›</span>
+            </div>
+            <div class="profile-menu-item" onclick="doLogout()">
+              <div class="pmi-icon" style="background:var(--red-100);">🚪</div>
+              <div><div class="pmi-title">Log Out</div><div class="pmi-sub">Sign out of FindIt</div></div>
+              <span class="pmi-arrow">›</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY ITEMS -->
+      <div class="screen" id="screen-myitems">
+        <div class="app-header">
+          <button class="back-btn" onclick="navigate('profile')">← Back</button>
+          <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">My Reports</span>
+          <span style="font-size:.9rem;cursor:pointer;" onclick="openReport('lost')">➕</span>
+        </div>
+        <div class="scroll"><div class="results-list" id="my-items-list" style="padding:12px 20px;"></div></div>
+      </div>
+
+      <!-- PRIVACY SETTINGS -->
+      <div class="screen" id="screen-privacy">
+        <div class="app-header">
+          <button class="back-btn" onclick="navigate('profile')">← Back</button>
+          <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Privacy Settings</span>
+          <span>🔒</span>
+        </div>
+        <div class="scroll">
+          <div style="padding:16px 20px;">
+            <div class="section-label" style="margin-bottom:10px;">Account</div>
+            <div class="info-card" style="margin-bottom:14px;">
+              <div class="info-row">
+                <span class="info-icon">👤</span>
+                <div style="flex:1;"><div class="info-key">Full Name</div><div class="info-val" id="priv-name">–</div></div>
+              </div>
+              <div class="info-row">
+                <span class="info-icon">✉️</span>
+                <div style="flex:1;"><div class="info-key">Email Address</div><div class="info-val" id="priv-email">–</div></div>
+              </div>
+              <div class="info-row" style="border-bottom:none;">
+                <span class="info-icon">🔑</span>
+                <div style="flex:1;"><div class="info-key">Password</div><div class="info-val">••••••••</div></div>
+                <span style="font-size:.68rem;font-weight:700;color:var(--blue-600);cursor:pointer;" onclick="showToast('Password change coming soon!')">Change</span>
+              </div>
+            </div>
+            <div class="section-label" style="margin-bottom:10px;">Visibility</div>
+            <div class="info-card" style="margin-bottom:14px;">
+              <div class="info-row" style="align-items:center;">
+                <span class="info-icon">📞</span>
+                <div style="flex:1;"><div class="info-key">Show Contact Info</div><div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Let others see your contact on item cards</div></div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-contact" checked onchange="savePrivacy()"/><span class="toggle-slider"></span></label>
+              </div>
+              <div class="info-row" style="align-items:center;">
+                <span class="info-icon">🔍</span>
+                <div style="flex:1;"><div class="info-key">Show My Listings Publicly</div><div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Anyone can see your reported items</div></div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-public" checked onchange="savePrivacy()"/><span class="toggle-slider"></span></label>
+              </div>
+              <div class="info-row" style="align-items:center;border-bottom:none;">
+                <span class="info-icon">📧</span>
+                <div style="flex:1;"><div class="info-key">Email Notifications</div><div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Receive match alerts via email</div></div>
+                <label class="toggle-switch"><input type="checkbox" id="toggle-email" checked onchange="savePrivacy()"/><span class="toggle-slider"></span></label>
+              </div>
+            </div>
+            <div class="section-label" style="margin-bottom:10px;">Your Data</div>
+            <div class="info-card" style="margin-bottom:14px;">
+              <div class="info-row" style="border-bottom:none;cursor:pointer;" onclick="exportData()">
+                <span class="info-icon">⬇️</span>
+                <div style="flex:1;"><div class="info-key">Export My Data</div><div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Download all your reports as JSON</div></div>
+                <span style="color:var(--gray-300);">›</span>
+              </div>
+            </div>
+            <div class="section-label" style="margin-bottom:10px;color:var(--red-500);">Danger Zone</div>
+            <div class="info-card" style="margin-bottom:14px;border:1.5px solid var(--red-100);">
+              <div class="info-row" style="cursor:pointer;border-bottom:none;" onclick="confirmDeleteAccount()">
+                <span class="info-icon">🗑️</span>
+                <div style="flex:1;"><div class="info-key" style="color:var(--red-500);">Delete Account</div><div style="font-size:.63rem;color:var(--gray-500);margin-top:2px;">Permanently delete your account &amp; all data</div></div>
+                <span style="color:var(--red-500);">›</span>
+              </div>
+            </div>
+            <div style="height:16px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN DASHBOARD -->
+      <div class="screen" id="screen-admin">
+        <div class="app-header">
+          <button class="back-btn" onclick="navigate('profile')">← Back</button>
+          <span style="font-size:.82rem;font-weight:800;color:var(--gray-900);">Admin Dashboard</span>
+          <span>🛡️</span>
+        </div>
+        <div class="scroll">
+          <div style="padding:16px 20px;">
+            <div class="admin-stat-grid" id="admin-stats"></div>
+            <div class="section-label" style="margin-bottom:10px;">All Items</div>
+            <div id="admin-items-list"></div>
+            <div class="section-label" style="margin-bottom:10px;margin-top:8px;">Registered Users</div>
+            <div id="admin-users-list"></div>
+            <div style="height:16px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+
   </div><!-- /main-app -->
 
   <!-- TOAST -->
@@ -807,8 +876,7 @@ body{
     </div>
   </div>
 
-</div><!-- /phone-screen -->
-</div><!-- /phone -->
+</div><!-- /app -->
 
 <script>
 // ══════════════════════════════════════════
@@ -857,11 +925,12 @@ async function api(method, endpoint, body=null){
 }
 
 // ══════════════════════════════════════════
-// CLOCK
+// CLOCK (kept for compatibility)
 // ══════════════════════════════════════════
 function updateClock(){
   const n=new Date();
-  document.getElementById('clock').textContent=
+  const el=document.getElementById('clock');
+  if(el) el.textContent=
     n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
 }
 setInterval(updateClock,10000); updateClock();
@@ -940,17 +1009,21 @@ async function enterApp(){
   mainApp.style.flexDirection='column';
   mainApp.style.flex='1';
   mainApp.style.overflow='hidden';
-  // Update UI with user
+  // Update UI with user info
   const av=initials(currentUser.name);
   if(currentUser.photo){
     document.getElementById('user-avatar').innerHTML=`<img src="${currentUser.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
     document.getElementById('profile-avatar-big').innerHTML=`<img src="${currentUser.photo}" style="width:100%;height:100%;object-fit:cover;"/><span class="profile-avatar-edit">📷</span>`;
+    document.getElementById('sidebar-av').innerHTML=`<img src="${currentUser.photo}"/>`;
   } else {
     document.getElementById('user-avatar').textContent=av;
     document.getElementById('profile-avatar-big').innerHTML=av+`<span class="profile-avatar-edit">📷</span>`;
+    document.getElementById('sidebar-av').textContent=av;
   }
   document.getElementById('profile-name').textContent=currentUser.name;
   document.getElementById('profile-email').textContent=currentUser.email;
+  document.getElementById('sidebar-name').textContent=currentUser.name;
+  document.getElementById('sidebar-footer').style.display='flex';
   if(currentUser.isAdmin) document.getElementById('admin-menu-item').style.display='flex';
   const hour=new Date().getHours();
   const greet=hour<12?'Good morning':hour<17?'Good afternoon':'Good evening';
@@ -1048,7 +1121,6 @@ function triggerUpload(){ document.getElementById('file-input').click(); }
 function handleUpload(e){
   const file=e.target.files[0];
   if(!file) return;
-  // Compress image using canvas before storing
   const reader=new FileReader();
   reader.onload=function(ev){
     const img=new Image();
@@ -1061,7 +1133,6 @@ function handleUpload(e){
       canvas.width=w; canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
       uploadedImage=canvas.toDataURL('image/jpeg',0.7);
-      // Show preview
       const area=document.getElementById('upload-area');
       area.classList.add('has-img');
       area.innerHTML=`
@@ -1292,7 +1363,6 @@ function renderPrivacy(){
   if(!currentUser) return;
   document.getElementById('priv-name').textContent  = currentUser.name;
   document.getElementById('priv-email').textContent = currentUser.email;
-  // load saved prefs
   const prefs = JSON.parse(localStorage.getItem('findit_privacy')||'{}');
   document.getElementById('toggle-contact').checked = prefs.contact !== false;
   document.getElementById('toggle-public').checked  = prefs.public  !== false;
@@ -1354,15 +1424,13 @@ function handleProfilePhoto(e){
     img.onload=function(){
       const canvas=document.createElement('canvas');
       const SIZE=200; canvas.width=SIZE; canvas.height=SIZE;
-      // crop to square
       const s=Math.min(img.width,img.height);
       const sx=(img.width-s)/2, sy=(img.height-s)/2;
       canvas.getContext('2d').drawImage(img,sx,sy,s,s,0,0,SIZE,SIZE);
       const photo=canvas.toDataURL('image/jpeg',0.8);
-      // update avatar everywhere
       document.getElementById('user-avatar').innerHTML=`<img src="${photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
       document.getElementById('profile-avatar-big').innerHTML=`<img src="${photo}" style="width:100%;height:100%;object-fit:cover;"/><span class="profile-avatar-edit">📷</span>`;
-      // save to backend
+      document.getElementById('sidebar-av').innerHTML=`<img src="${photo}"/>`;
       api('PATCH','/auth/photo',{photo}).then(()=>showToast('Profile photo updated! 📷'));
       if(currentUser) currentUser.photo=photo;
     };
@@ -1392,7 +1460,6 @@ function toggleMap(){
           const{lat,lng}=e.latlng;
           if(leafletMarker) leafletMap.removeLayer(leafletMarker);
           leafletMarker=L.marker([lat,lng]).addTo(leafletMap);
-          // reverse geocode using nominatim
           fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`)
             .then(r=>r.json())
             .then(d=>{
@@ -1424,7 +1491,6 @@ async function renderAdmin(){
     <div class="admin-stat-card"><div class="admin-stat-val" style="color:var(--red-500);">${lost}</div><div class="admin-stat-lbl">Lost Items</div></div>
     <div class="admin-stat-card"><div class="admin-stat-val" style="color:var(--green-600);">${found}</div><div class="admin-stat-lbl">Found Items</div></div>
     <div class="admin-stat-card"><div class="admin-stat-val" style="color:#6366F1;">${resolved}</div><div class="admin-stat-lbl">Resolved</div></div>`;
-  // all items
   document.getElementById('admin-items-list').innerHTML=items.slice(0,10).map(item=>`
     <div class="item-card" onclick="openDetail('${item._id||item.id}')">
       <div class="item-img">${item.image?`<img src="${item.image}"/>`:`${item.icon}`}</div>
@@ -1434,7 +1500,6 @@ async function renderAdmin(){
         <div class="item-meta"><span class="meta-tag">📍 ${item.location}</span><span class="badge badge-${item.type}">${cap(item.type)}</span></div>
       </div>
     </div>`).join('');
-  // users
   try{
     const users=await api('GET','/auth/admin/users');
     document.getElementById('admin-users-list').innerHTML=users.map(u=>`
