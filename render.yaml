@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: findit-app
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: MONGODB_URI
+        sync: false        # you paste this in the Render dashboard
+      - key: JWT_SECRET
+        sync: false        # you paste this in the Render dashboard
+      - key: NODE_ENV
+        value: production
